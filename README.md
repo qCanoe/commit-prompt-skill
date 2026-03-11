@@ -1,6 +1,6 @@
 # Commit Prompt
 
-遵循 Git 工程流程的 Cursor Agent Skill，用于将大量代码更新拆分成模块化原子提交，生成 Commit Plan、逐步验证并输出 PR 描述草稿。
+遵循 Git 工程流程的 Agent Skill，用于将大量代码更新拆分成模块化原子提交，生成 Commit Plan、逐步验证并输出 PR 描述草稿。支持 Cursor、Codex、OpenCode、Claude Code 等 AI 编程助手。
 
 ## 功能特性
 
@@ -18,16 +18,32 @@
 
 ## 安装
 
-1. 将本仓库克隆或复制到 Cursor 的 skills 目录：
+### 方式一：npx（推荐）
+
+使用 [add-skill](https://add-skill.org/) 一键安装，支持 Cursor、Codex、OpenCode、Claude Code 等多种 AI 编程助手：
 
 ```bash
-# 克隆到 Cursor skills 目录
-git clone https://github.com/qCanoe/commit-prompt-skill.git
-# 或复制到你的 skills 目录
-cp -r commit-prompt-skill $CURSOR_SKILLS_DIR/commit-prompt
+# 安装到当前项目
+npx add-skill qCanoe/commit-prompt-skill
+
+# 安装到用户目录（全局可用）
+npx add-skill qCanoe/commit-prompt-skill -g
+
+# 非交互模式（CI/CD）
+npx add-skill qCanoe/commit-prompt-skill -g -y
 ```
 
-2. 确保 Cursor 已启用该 skill（通常在 `settings.json` 或 `.cursor` 配置中）。
+### 方式二：手动安装
+
+将本仓库克隆或复制到对应 agent 的 skills 目录：
+
+```bash
+# Cursor: ~/.cursor/skills/ 或 .cursor/skills/
+git clone https://github.com/qCanoe/commit-prompt-skill.git ~/.cursor/skills/commit-prompt
+
+# Codex: ~/.codex/skills/
+git clone https://github.com/qCanoe/commit-prompt-skill.git ~/.codex/skills/commit-prompt
+```
 
 ## 核心原则
 
