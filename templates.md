@@ -1,5 +1,17 @@
 # Commit Prompt 模板
 
+## 分支命名参考
+
+| 类型 | 格式 | 示例 |
+|------|------|------|
+| 新功能 | `feature/<topic>` | `feature/user-auth` |
+| Bug 修复 | `fix/<topic>` | `fix/date-timezone` |
+| 文档 | `docs/<topic>` | `docs/api-readme` |
+| 重构 | `refactor/<topic>` | `refactor/db-layer` |
+| 依赖升级 | `chore/deps-<pkg>` | `chore/deps-lodash` |
+
+---
+
 ## Commit Plan 模板
 
 写代码前必须输出此计划：
@@ -160,3 +172,40 @@ go test ./...             # 单元测试
 golangci-lint run         # 代码检查
 go build ./...            # 构建
 ```
+
+### Java / Kotlin
+```bash
+./gradlew test            # 或 mvn test
+./gradlew check           # 代码检查
+./gradlew build           # 构建
+```
+
+### C# / .NET
+```bash
+dotnet test               # 单元测试
+dotnet format --verify    # 代码检查
+dotnet build              # 构建
+```
+
+### Ruby
+```bash
+bundle exec rspec         # 单元测试
+bundle exec rubocop       # 代码检查
+```
+
+---
+
+## Scope 参考
+
+常见 scope 命名（按模块/目录/功能）：
+
+| Scope | 含义 | 示例 |
+|-------|------|------|
+| `auth` | 认证/授权 | 登录、JWT、权限 |
+| `api` | API 层 | 路由、控制器 |
+| `db` | 数据层 | 迁移、模型、ORM |
+| `ui` | 界面 | 组件、样式 |
+| `config` | 配置 | 环境变量、配置文件 |
+| `deps` | 依赖 | package.json、requirements.txt |
+| `ci` | 持续集成 | GitHub Actions、Jenkinsfile |
+| `docs` | 文档 | README、API 文档 |

@@ -152,3 +152,76 @@ feat(parser): add JSON support and fix formatting
 4. `feat(parser): add JSON parsing support`
 
 每个都可以独立验证、审查、回滚。
+
+---
+
+## 示例 4: 依赖升级
+
+### Commit Plan
+
+**Branch**: `chore/deps-axios`
+
+**Baseline checks**:
+- Command: `npm test && npm run build`
+- Result: ✅ 全部通过
+
+### Commits (ordered)
+
+#### 1. `chore(deps): upgrade axios from 0.27 to 1.6`
+- **Intent**: 升级 axios 依赖并修复 API 变更
+- **Files**: `package.json`, `package-lock.json`, `src/api/client.ts`
+- **Verification**: `npm test -- --grep "api"`
+- **Notes**: 检查 breaking changes，更新调用方式
+
+#### 2. `docs(deps): add axios migration note to CHANGELOG`
+- **Intent**: 记录升级说明供团队参考
+- **Files**: `CHANGELOG.md`
+- **Verification**: 无
+- **Notes**: 纯文档
+
+---
+
+## 示例 5: 文档与 CI 配置
+
+### Commit Plan
+
+**Branch**: `docs/readme-and-ci`
+
+**Baseline checks**:
+- Command: `npm test`
+- Result: ✅ 通过
+
+### Commits (ordered)
+
+#### 1. `docs: add API usage examples to README`
+- **Intent**: 补充 README 中的 API 使用示例
+- **Files**: `README.md`
+- **Verification**: 无
+- **Notes**: 纯文档，不修改代码
+
+#### 2. `ci: add GitHub Actions workflow for lint`
+- **Intent**: 添加 PR 时的自动 lint 检查
+- **Files**: `.github/workflows/lint.yml`
+- **Verification**: 本地 `npm run lint` 通过
+- **Notes**: 与文档改动分离，便于单独回滚
+
+---
+
+## 示例 6: 快速决策（单 commit vs 多 commit）
+
+### 改动较少：单 commit 即可
+
+```bash
+# 仅修改 1 个文件，修复一个小 bug
+fix(auth): correct token expiry validation
+```
+
+### 改动较多：必须拆分
+
+| 改动类型 | 是否拆分 | 示例 |
+|----------|----------|------|
+| 格式化 + 功能 | ✅ 必须 | `style:` 与 `feat:` 分开 |
+| 重命名 + 逻辑 | ✅ 必须 | `refactor:` 与 `feat:` 分开 |
+| 多个独立模块 | ✅ 必须 | 按 scope 拆成多个 commit |
+| 同一 bug 的多处修复 | ❌ 可合并 | 同一 `fix(scope):` |
+| 仅文档更新 | ❌ 可合并 | 同一 `docs:` |

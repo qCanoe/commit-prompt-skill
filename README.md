@@ -16,6 +16,17 @@
 - 需要规范 commit 流程
 - 提到 commit、push、pull request 相关操作时
 
+## 快速开始
+
+```bash
+# 1. 安装（推荐 npx）
+npx add-skill qCanoe/commit-prompt-skill -g
+
+# 2. 在 Agent 对话中触发
+# 输入：「帮我提交这些代码」或「创建 PR」
+# 或使用 /commit-prompt（若支持）
+```
+
 ## 安装
 
 ### 方式一：npx（推荐）
@@ -38,11 +49,17 @@ npx add-skill qCanoe/commit-prompt-skill -g -y
 将本仓库克隆或复制到对应 agent 的 skills 目录：
 
 ```bash
-# Cursor: ~/.cursor/skills/ 或 .cursor/skills/
+# Cursor
 git clone https://github.com/qCanoe/commit-prompt-skill.git ~/.cursor/skills/commit-prompt
 
-# Codex: ~/.codex/skills/
+# Codex
 git clone https://github.com/qCanoe/commit-prompt-skill.git ~/.codex/skills/commit-prompt
+
+# OpenCode
+git clone https://github.com/qCanoe/commit-prompt-skill.git ~/.config/opencode/skill/commit-prompt
+
+# Claude Code
+git clone https://github.com/qCanoe/commit-prompt-skill.git ~/.claude/skills/commit-prompt
 ```
 
 ## 核心原则
@@ -109,16 +126,26 @@ type(scope): imperative summary
 
 ```
 commit-prompt/
-├── SKILL.md      # Skill 定义与核心逻辑
-├── templates.md  # Commit Plan、Commit Record、PR 描述模板
-├── examples.md   # 完整示例（含用户认证、Bug 修复、格式化重构）
-└── README.md     # 本说明
+├── SKILL.md      # Skill 定义、工作流程、检查清单
+├── templates.md  # Commit Plan、Commit Record、PR 模板、Scope 参考
+├── examples.md   # 6 个示例（认证、Bug 修复、格式化、依赖升级、文档 CI、决策指南）
+├── README.md     # 本说明
+└── LICENSE       # MIT 许可证
 ```
 
 ## 模板与示例
 
 - 完整模板：[templates.md](templates.md)
 - 具体示例：[examples.md](examples.md)
+
+## 故障排除
+
+| 问题 | 可能原因 | 解决方式 |
+|------|----------|----------|
+| Skill 未生效 | 未安装到正确目录 | 确认 `~/.cursor/skills/commit-prompt` 存在且含 `SKILL.md` |
+| add-skill 找不到 | 未安装 Node.js | 安装 Node.js 18+ 或使用手动 git clone |
+| 主线分支名不是 main | 项目使用 master 等 | 在对话中说明，或修改 SKILL 中的 `origin/main` |
+| 验证命令不同 | 项目结构不同 | 在对话中说明项目的 test/lint/build 命令 |
 
 ## 许可证
 
