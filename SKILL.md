@@ -1,75 +1,75 @@
 ---
 name: commit-prompt
-description: 遵循 Git 工程流程的代码提交代理，将大量代码更新拆分成模块化原子提交，生成 Commit Plan、逐步验证并输出 PR 描述草稿。当用户请求提交代码、创建 PR、需要拆分大量改动、或提到 commit/push/pull request 时使用。
+description: A Git workflow skill for code submission—split large changes into modular, atomic commits; produce a Commit Plan; verify incrementally; and draft a PR description. Use when the user asks to commit, push, open/create a PR, split a big change set, or mentions commit / push / pull request.
 ---
 
 # Commit Prompt
 
-你是一个严格遵守 Git 工程流程的代码提交代理。将代码更新拆分成可独立验证、可审查、可回滚的模块化提交。
+You are a commit agent that follows a disciplined Git workflow. Break updates into modular commits that are independently verifiable, reviewable, and easy to revert.
 
-## 触发条件
+## When to activate
 
-当用户表达以下意图时激活本 skill：
+Enable this skill when the user wants to:
 
-- 提交代码、commit、push
-- 创建 PR、pull request
-- 拆分大量改动、整理提交
-- 规范 commit、写 commit message
-- 代码已改完需要提交
+- Commit code, run `commit`, or `push`
+- Create or open a PR / pull request
+- Split, reorganize, or clean up a large batch of changes
+- Standardize commits or write good commit messages
+- Finish a coding session and needs everything committed
 
-## 核心原则
+## Core principles
 
-### 原子提交要求
-- **单一职责**：每个 commit 只做一件事（one logical change）
-- **可构建**：每个 commit 后代码处于可运行状态
-- **可验证**：必须附带验证证据（tests/lint/build 结果摘要）
-- **可读性**：单个 commit 的 diff ≤300 行（超出须说明理由）
+### Atomic commit requirements
+- **Single responsibility**: One logical change per commit
+- **Buildable**: After every commit, the codebase should still run
+- **Verifiable**: Attach evidence (short summary of tests / lint / build)
+- **Readable**: Aim for ≤300 lines per commit diff (if larger, explain why)
 
-### 禁止事项
-- ❌ 不相关改动混在同一个 commit（格式化、重命名、依赖升级、功能改动）
-- ❌ 一次性巨型 commit
-- ❌ 边改结构边加功能
+### Avoid
+- ❌ Mixing unrelated edits in one commit (formatting, renames, dependency bumps, features)
+- ❌ One giant “everything” commit
+- ❌ Restructuring the codebase while shipping new behavior in the same commit
 
-## 工作流程
+## Workflow
 
-### Phase 1: 准备
+### Phase 1: Prep
 
-1. **检查工作区**：`git status` 确认改动范围，如有未暂存冲突先解决
-2. **创建分支**：`feature/<topic>` 或 `fix/<topic>`（若尚未创建）
-3. **同步主线**：
+1. **Inspect the working tree**: `git status` to see scope; resolve conflicts before staging
+2. **Branch**: `feature/<topic>` or `fix/<topic>` if you are not already on one
+3. **Sync the default branch**:
    ```bash
    git fetch --all --prune
    git rebase origin/main
    ```
-4. **基线验证**：运行 tests + build + lint，记录输出摘要
+4. **Baseline checks**: run tests + build + lint; capture a short summary
 
-### Phase 2: 规划
+### Phase 2: Plan
 
-**写代码前必须先输出 Commit Plan**（见 [templates.md](templates.md)）
+**Before coding, output a Commit Plan** (see [templates.md](templates.md))
 
-规划原则：
-- 先 infra/refactor 再 feature
-- 先添加测试再改逻辑
-- 格式化全仓单独 commit，放最后或最开始
-- scope 按模块/目录划分（如 `auth`、`db`、`api`）
+Planning rules:
+- Infra / refactors before features
+- Add or extend tests before changing behavior
+- Whole-repo formatting gets its own commit—first or last
+- Partition scope by module or directory (e.g. `auth`, `db`, `api`)
 
-### Phase 3: 执行
+### Phase 3: Execute
 
-每个模块循环：
-1. 实现改动
-2. 运行该模块验证命令
-3. `git add -p` 精确暂存（禁止 `git add .`）；若改动边界清晰，可用 `git add <path>`
-4. commit（使用 Conventional Commits 格式）
-5. 输出 Commit Record（见 [templates.md](templates.md)）
-6. push（或批量 push，但每个 commit 都要可验证）
+For each slice:
+1. Implement the change
+2. Run the verification commands that belong to that slice
+3. Stage with `git add -p` (avoid blind `git add .`); if boundaries are obvious, `git add <path>` is fine
+4. Commit using Conventional Commits
+5. Output a Commit Record (see [templates.md](templates.md))
+6. Push (batch is OK—each commit must remain verifiable)
 
 ### Phase 4: PR
 
-最终输出 PR 描述草稿（见 [templates.md](templates.md)）
+Finish with a PR description draft (see [templates.md](templates.md))
 
-## Commit Message 格式
+## Commit message format
 
-使用 [Conventional Commits](https://www.conventionalcommits.org/)：
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 type(scope): imperative summary
@@ -79,42 +79,42 @@ type(scope): imperative summary
 [optional footer]
 ```
 
-**类型**：`feat` | `fix` | `refactor` | `chore` | `test` | `docs` | `build` | `ci` | `perf` | `style`
+**Types**: `feat` | `fix` | `refactor` | `chore` | `test` | `docs` | `build` | `ci` | `perf` | `style`
 
-**scope 建议**：按功能模块或目录，如 `auth`、`db`、`api`、`ui`、`config`。无明确范围时可省略。
+**Scope**: Prefer a feature area or path: `auth`, `db`, `api`, `ui`, `config`. Omit when there is no clear boundary.
 
-## 特殊情况处理
+## Edge cases
 
-### 已有未提交改动
-先 `git status` 分析改动类型，按本流程拆成多个 commit，再继续
+### Uncommitted work already exists
+Run `git status`, classify changes, split into commits using this flow, then continue
 
-### 无法单独验证的提交
-先调整架构/加测试/加适配层，让后续提交可验证，**不要**揉成大提交
+### A slice cannot be verified alone
+Adjust architecture, add tests, or introduce an adapter so later commits stay small—**do not** collapse into one mega-commit
 
-### 生成文件 / lockfile / vendored
-单独 commit，或按项目规范处理。lockfile 通常与依赖变更同 commit
+### Generated files / lockfiles / vendored trees
+Dedicated commit, or follow project policy. Lockfiles usually ride with the dependency change
 
-### 破坏性变更
-- 必须在 commit message 中标注 `BREAKING CHANGE`
-- 提供迁移说明
-- 保证过渡期可用
+### Breaking changes
+- Mark `BREAKING CHANGE` in the commit message
+- Document migration steps
+- Keep a workable transition period when possible
 
-### 数据库/接口/配置变更
-必须包含迁移/兼容策略，用独立 commit 表达
+### Database, API, or config changes
+Include migration / compatibility strategy; express it in dedicated commits
 
-### 紧急 hotfix
-可适当放宽拆分粒度，但至少区分「修复逻辑」与「测试/文档」
+### Emergency hotfix
+You may relax splitting slightly, but still separate “fix logic” from “tests / docs” at minimum
 
-## 执行检查清单
+## Pre-commit checklist
 
-每完成一个 commit 前确认：
+Before finalizing each commit:
 
-- [ ] 本次改动是否单一职责？
-- [ ] 是否已运行验证命令并记录结果？
-- [ ] commit message 是否符合 Conventional Commits？
-- [ ] diff 是否 ≤300 行（或已说明理由）？
+- [ ] Is this change single-purpose?
+- [ ] Did you run verification and record the outcome?
+- [ ] Does the message follow Conventional Commits?
+- [ ] Is the diff ≤300 lines (or justified if larger)?
 
-## 模板与示例
+## Templates and examples
 
-- 完整模板：[templates.md](templates.md)
-- 具体示例：[examples.md](examples.md)
+- Templates: [templates.md](templates.md)
+- Examples: [examples.md](examples.md)

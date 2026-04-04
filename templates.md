@@ -1,37 +1,37 @@
-# Commit Prompt 模板
+# Commit Prompt templates
 
-## 分支命名参考
+## Branch naming
 
-| 类型 | 格式 | 示例 |
-|------|------|------|
-| 新功能 | `feature/<topic>` | `feature/user-auth` |
-| Bug 修复 | `fix/<topic>` | `fix/date-timezone` |
-| 文档 | `docs/<topic>` | `docs/api-readme` |
-| 重构 | `refactor/<topic>` | `refactor/db-layer` |
-| 依赖升级 | `chore/deps-<pkg>` | `chore/deps-lodash` |
+| Kind | Pattern | Example |
+|------|---------|---------|
+| Feature | `feature/<topic>` | `feature/user-auth` |
+| Bugfix | `fix/<topic>` | `fix/date-timezone` |
+| Docs | `docs/<topic>` | `docs/api-readme` |
+| Refactor | `refactor/<topic>` | `refactor/db-layer` |
+| Dependencies | `chore/deps-<pkg>` | `chore/deps-lodash` |
 
 ---
 
-## Commit Plan 模板
+## Commit Plan template
 
-写代码前必须输出此计划：
+Emit this plan before you write code:
 
 ```markdown
 ## Commit Plan
 
-**Branch**: `feature/<topic>` 或 `fix/<topic>`
+**Branch**: `feature/<topic>` or `fix/<topic>`
 
 **Baseline checks**:
-- Command: `<验证命令>`
-- Result: `<结果摘要>`
+- Command: `<verification command>`
+- Result: `<short result summary>`
 
 ### Commits (ordered)
 
 #### 1. `<type(scope): summary>`
-- **Intent**: <一句话说明这次提交的唯一目的>
-- **Files**: <预计涉及的文件/目录>
-- **Verification**: <将运行的命令>
-- **Notes**: <兼容性/风险/是否纯重构等>
+- **Intent**: <one sentence: the sole purpose of this commit>
+- **Files**: <expected paths or directories>
+- **Verification**: <command you will run>
+- **Notes**: <compat, risk, refactor-only, etc.>
 
 #### 2. `<type(scope): summary>`
 - **Intent**: ...
@@ -39,41 +39,41 @@
 - **Verification**: ...
 - **Notes**: ...
 
-(继续直到覆盖所有改动)
+(continue until every planned change is covered)
 ```
 
 ---
 
-## Commit Record 模板
+## Commit Record template
 
-每完成一个 commit 后输出：
+After each commit, output:
 
 ```markdown
 ## Commit Record
 
-**Commit**: `<hash短码>` `<message>`
+**Commit**: `<short-hash>` `<message>`
 
-**Why**: <为什么需要这次提交，以及它与前后提交的边界>
+**Why**: <why this commit exists and how it differs from neighbors before/after>
 
 **Verification**:
-- Command: `<命令>`
-- Result: `<关键结果>`
+- Command: `<command>`
+- Result: `<key outcome>`
 
-**Push**: <是否已 push；如果没 push，说明何时 push 与原因>
+**Push**: <pushed or not; if not, when and why>
 ```
 
 ---
 
-## PR 描述模板
+## PR description template
 
-最终产出的 PR 描述草稿：
+Final PR draft:
 
 ```markdown
 ## Summary
-<改了什么，用户可见变化>
+<what changed; user-visible impact>
 
 ## Scope
-<模块列表，对应 commit 范围>
+<modules touched; maps to commit set>
 
 | Commit | Type | Scope | Description |
 |--------|------|-------|-------------|
@@ -81,43 +81,43 @@
 | def456 | test | auth  | Add auth unit tests |
 
 ## Verification
-<你跑过哪些验证>
+<what you ran>
 
 - [ ] Unit tests: `npm test` ✅
 - [ ] Lint: `npm run lint` ✅
 - [ ] Build: `npm run build` ✅
-- [ ] Manual testing: <描述>
+- [ ] Manual testing: <notes>
 
 ## Risk & Rollback
 
 ### Risks
-- <风险点 1>
-- <风险点 2>
+- <risk 1>
+- <risk 2>
 
 ### Rollback Strategy
-- 回滚哪些 commits: `git revert <hash1> <hash2>`
-- 数据迁移: <是否有，如何处理>
-- 服务依赖: <是否影响其他服务>
+- Revert commits: `git revert <hash1> <hash2>`
+- Migrations: <yes/no and how to handle>
+- Downstream services: <impact if any>
 
 ## Screenshots / Logs
-<如适用，附上截图或关键日志>
+<attach if useful>
 ```
 
 ---
 
-## Commit Message 模板
+## Commit message templates
 
-### 标准格式
+### Standard
 
 ```
 <type>(<scope>): <imperative summary>
 
-<optional body - 解释 why 而非 what>
+<optional body — explain why, not what>
 
 <optional footer>
 ```
 
-### 带 Breaking Change
+### With breaking change
 
 ```
 feat(api): change authentication endpoint
@@ -129,7 +129,7 @@ Migration:
 - Run migration script: `npm run migrate:auth`
 ```
 
-### 带 Issue 引用
+### With issue reference
 
 ```
 fix(parser): handle empty input gracefully
@@ -139,73 +139,73 @@ Closes #123
 
 ---
 
-## Verification 命令参考
+## Verification commands by stack
 
-根据项目类型选择合适的验证命令：
+Pick commands that fit the project:
 
 ### Node.js / TypeScript
 ```bash
-npm test                    # 单元测试
-npm run lint               # 代码检查
-npm run build              # 构建
-npm run typecheck          # 类型检查
+npm test                    # unit tests
+npm run lint               # lint
+npm run build              # build
+npm run typecheck          # types
 ```
 
 ### Python
 ```bash
-pytest                     # 单元测试
-ruff check .              # 代码检查
-mypy .                    # 类型检查
-python -m build           # 构建
+pytest                     # unit tests
+ruff check .              # lint
+mypy .                    # types
+python -m build           # build
 ```
 
 ### Rust
 ```bash
-cargo test                 # 单元测试
-cargo clippy              # 代码检查
-cargo build --release     # 构建
+cargo test                 # unit tests
+cargo clippy              # lint
+cargo build --release     # build
 ```
 
 ### Go
 ```bash
-go test ./...             # 单元测试
-golangci-lint run         # 代码检查
-go build ./...            # 构建
+go test ./...             # unit tests
+golangci-lint run         # lint
+go build ./...            # build
 ```
 
 ### Java / Kotlin
 ```bash
-./gradlew test            # 或 mvn test
-./gradlew check           # 代码检查
-./gradlew build           # 构建
+./gradlew test            # or mvn test
+./gradlew check           # checks
+./gradlew build           # build
 ```
 
 ### C# / .NET
 ```bash
-dotnet test               # 单元测试
-dotnet format --verify    # 代码检查
-dotnet build              # 构建
+dotnet test               # unit tests
+dotnet format --verify    # format check
+dotnet build              # build
 ```
 
 ### Ruby
 ```bash
-bundle exec rspec         # 单元测试
-bundle exec rubocop       # 代码检查
+bundle exec rspec         # unit tests
+bundle exec rubocop       # lint
 ```
 
 ---
 
-## Scope 参考
+## Scope reference
 
-常见 scope 命名（按模块/目录/功能）：
+Common scopes (module, directory, or capability):
 
-| Scope | 含义 | 示例 |
-|-------|------|------|
-| `auth` | 认证/授权 | 登录、JWT、权限 |
-| `api` | API 层 | 路由、控制器 |
-| `db` | 数据层 | 迁移、模型、ORM |
-| `ui` | 界面 | 组件、样式 |
-| `config` | 配置 | 环境变量、配置文件 |
-| `deps` | 依赖 | package.json、requirements.txt |
-| `ci` | 持续集成 | GitHub Actions、Jenkinsfile |
-| `docs` | 文档 | README、API 文档 |
+| Scope | Meaning | Examples |
+|-------|---------|----------|
+| `auth` | Authentication / authorization | Login, JWT, permissions |
+| `api` | API layer | Routes, controllers |
+| `db` | Data layer | Migrations, models, ORM |
+| `ui` | UI | Components, styling |
+| `config` | Configuration | Env vars, config files |
+| `deps` | Dependencies | package.json, requirements.txt |
+| `ci` | Continuous integration | GitHub Actions, Jenkinsfile |
+| `docs` | Documentation | README, API docs |

@@ -1,52 +1,52 @@
 # Commit Prompt
 
-遵循 Git 工程流程的 Agent Skill，用于将大量代码更新拆分成模块化原子提交，生成 Commit Plan、逐步验证并输出 PR 描述草稿。支持 Cursor、Codex、OpenCode、Claude Code 等 AI 编程助手。
+An Agent Skill that follows disciplined Git workflows: break large code changes into small, modular, atomic commits; produce a Commit Plan; verify step by step; and draft a pull request description. Works with Cursor, Codex, OpenCode, Claude Code, and similar AI coding assistants.
 
-## 功能特性
+## Features
 
-- **原子提交**：将大改动拆分为单一职责、可独立验证的小提交
-- **Commit Plan**：写代码前先规划，明确每个提交的意图与验证方式
-- **Conventional Commits**：统一使用规范的 commit message 格式
-- **PR 描述**：自动生成包含验证清单、风险与回滚策略的 PR 草稿
+- **Atomic commits**: Split big changes into single-purpose commits you can validate on their own
+- **Commit Plan**: Plan before you code—clear intent and verification for each commit
+- **Conventional Commits**: Consistent, spec-compliant commit messages
+- **PR draft**: Auto-generated PR text with a verification checklist, risks, and rollback notes
 
-## 适用场景
+## When to use
 
-- 提交代码、创建 PR
-- 需要拆分大量改动
-- 需要规范 commit 流程
-- 提到 commit、push、pull request 相关操作时
+- Committing code or opening a PR
+- Untangling a large set of changes
+- Standardizing how you commit
+- Any conversation that mentions commit, push, or pull request
 
-## 快速开始
+## Quick start
 
 ```bash
-# 1. 安装（推荐 npx）
+# 1. Install (npx recommended)
 npx add-skill qCanoe/commit-prompt-skill -g
 
-# 2. 在 Agent 对话中触发
-# 输入：「帮我提交这些代码」或「创建 PR」
-# 或使用 /commit-prompt（若支持）
+# 2. Invoke in an agent chat
+# Say: "Help me commit these changes" or "Create a PR"
+# Or use /commit-prompt if your client supports it
 ```
 
-## 安装
+## Installation
 
-### 方式一：npx（推荐）
+### Option A: npx (recommended)
 
-使用 [add-skill](https://add-skill.org/) 一键安装，支持 Cursor、Codex、OpenCode、Claude Code 等多种 AI 编程助手：
+Use [add-skill](https://add-skill.org/) for one-command setup across Cursor, Codex, OpenCode, Claude Code, and more:
 
 ```bash
-# 安装到当前项目
+# Project-local install
 npx add-skill qCanoe/commit-prompt-skill
 
-# 安装到用户目录（全局可用）
+# User-wide install (available everywhere)
 npx add-skill qCanoe/commit-prompt-skill -g
 
-# 非交互模式（CI/CD）
+# Non-interactive (CI/CD)
 npx add-skill qCanoe/commit-prompt-skill -g -y
 ```
 
-### 方式二：手动安装
+### Option B: Manual install
 
-将本仓库克隆或复制到对应 agent 的 skills 目录：
+Clone or copy this repo into your agent’s skills directory:
 
 ```bash
 # Cursor
@@ -62,55 +62,55 @@ git clone https://github.com/qCanoe/commit-prompt-skill.git ~/.config/opencode/s
 git clone https://github.com/qCanoe/commit-prompt-skill.git ~/.claude/skills/commit-prompt
 ```
 
-## 核心原则
+## Core principles
 
-### 原子提交要求
+### Atomic commit requirements
 
-- **单一职责**：每个 commit 只做一件事（one logical change）
-- **可构建**：每个 commit 后代码处于可运行状态
-- **可验证**：必须附带验证证据（tests/lint/build 结果摘要）
-- **可读性**：单个 commit 的 diff ≤300 行（超出须说明理由）
+- **Single responsibility**: One logical change per commit
+- **Buildable**: After every commit, the codebase should still run
+- **Verifiable**: Attach evidence (short summary of tests / lint / build)
+- **Readable**: Aim for ≤300 lines per commit diff (if larger, explain why)
 
-### 禁止事项
+### Avoid
 
-- ❌ 不相关改动混在同一个 commit（格式化、重命名、依赖升级、功能改动）
-- ❌ 一次性巨型 commit
-- ❌ 边改结构边加功能
+- ❌ Mixing unrelated edits in one commit (formatting, renames, dependency bumps, features)
+- ❌ One giant “everything” commit
+- ❌ Restructuring the codebase while shipping new behavior in the same commit
 
-## 工作流程
+## Workflow
 
-### Phase 1: 准备
+### Phase 1: Prep
 
-1. 创建分支：`feature/<topic>` 或 `fix/<topic>`
-2. 同步主线：`git fetch --all --prune` 后 `git rebase origin/main`
-3. 基线验证：运行 tests + build + lint，记录输出摘要
+1. Create a branch: `feature/<topic>` or `fix/<topic>`
+2. Sync the default branch: `git fetch --all --prune`, then `git rebase origin/main`
+3. Baseline checks: run tests + build + lint; capture a short summary of the output
 
-### Phase 2: 规划
+### Phase 2: Plan
 
-写代码前必须先输出 **Commit Plan**。规划原则：
+**Before writing code, output a Commit Plan.** Planning rules:
 
-- 先 infra/refactor 再 feature
-- 先添加测试再改逻辑
-- 格式化全仓单独 commit，放最后或最开始
+- Infra / refactors before features
+- Add or extend tests before changing behavior
+- Whole-repo formatting gets its own commit—first or last
 
-### Phase 3: 执行
+### Phase 3: Execute
 
-每个模块循环：
+For each slice, repeat:
 
-1. 实现改动
-2. 运行该模块验证命令
-3. `git add -p` 精确暂存（禁止 `git add .`）
-4. commit（使用 Conventional Commits 格式）
-5. 输出 Commit Record
-6. push（或批量 push，但每个 commit 都要可验证）
+1. Implement the change
+2. Run the verification commands that belong to that slice
+3. Stage precisely with `git add -p` (avoid blind `git add .`)
+4. Commit using Conventional Commits
+5. Emit a Commit Record
+6. Push (batch pushes are fine—as long as each commit was verified)
 
 ### Phase 4: PR
 
-最终输出 PR 描述草稿（含 Summary、Scope、Verification、Risk & Rollback）。
+Finish with a PR description draft (Summary, Scope, Verification, Risk & Rollback).
 
-## Commit Message 格式
+## Commit message format
 
-使用 [Conventional Commits](https://www.conventionalcommits.org/)：
+Follow [Conventional Commits](https://www.conventionalcommits.org/):
 
 ```
 type(scope): imperative summary
@@ -120,37 +120,37 @@ type(scope): imperative summary
 [optional footer]
 ```
 
-**类型**：`feat` | `fix` | `refactor` | `chore` | `test` | `docs` | `build` | `ci` | `perf` | `style`
+**Types**: `feat` | `fix` | `refactor` | `chore` | `test` | `docs` | `build` | `ci` | `perf` | `style`
 
-## 文件结构
+## Repository layout
 
 ```
 commit-prompt/
-├── SKILL.md      # Skill 定义、工作流程、检查清单
-├── templates.md  # Commit Plan、Commit Record、PR 模板、Scope 参考
-├── examples.md   # 6 个示例（认证、Bug 修复、格式化、依赖升级、文档 CI、决策指南）
-├── README.md     # 本说明
-└── LICENSE       # MIT 许可证
+├── SKILL.md      # Skill definition, workflow, checklist
+├── templates.md  # Commit Plan, Commit Record, PR draft, scope hints
+├── examples.md   # Six walkthroughs (auth, bugfix, formatting, deps, docs/CI, split vs merge)
+├── README.md     # This file
+└── LICENSE       # MIT
 ```
 
-## 模板与示例
+## Templates and examples
 
-- 完整模板：[templates.md](templates.md)
-- 具体示例：[examples.md](examples.md)
+- Full templates: [templates.md](templates.md)
+- Worked examples: [examples.md](examples.md)
 
-## 故障排除
+## Troubleshooting
 
-| 问题 | 可能原因 | 解决方式 |
-|------|----------|----------|
-| Skill 未生效 | 未安装到正确目录 | 确认 `~/.cursor/skills/commit-prompt` 存在且含 `SKILL.md` |
-| add-skill 找不到 | 未安装 Node.js | 安装 Node.js 18+ 或使用手动 git clone |
-| 主线分支名不是 main | 项目使用 master 等 | 在对话中说明，或修改 SKILL 中的 `origin/main` |
-| 验证命令不同 | 项目结构不同 | 在对话中说明项目的 test/lint/build 命令 |
+| Symptom | Likely cause | What to do |
+|---------|----------------|------------|
+| Skill not loading | Wrong install path | Confirm `~/.cursor/skills/commit-prompt` exists and contains `SKILL.md` |
+| `add-skill` missing | No Node.js | Install Node.js 18+ or use manual `git clone` |
+| Default branch isn’t `main` | Project uses `master`, etc. | Say so in chat, or replace `origin/main` in the skill |
+| Different verify commands | Repo-specific tooling | Tell the agent your test / lint / build commands |
 
-## 许可证
+## License
 
 MIT
 
-## 贡献
+## Contributing
 
-欢迎提交 Issue 和 Pull Request。
+Issues and pull requests are welcome.
